@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "page_title": "Nineteen58 × Old Mutual — The Future of Customer Conversations",
+    "description": "How Nineteen58 delivers 200% higher outcomes for Old Mutual's 13.7 million customers — in 30 days.",
+    "year": "2026"
+  },
+
+  "brand": {
+    "primary":       "#006B3F",
+    "primary_dark":  "#004D2C",
+    "primary_xdark": "#003320",
+    "primary_light": "#E6F3EC",
+    "primary_mid":   "#B8DCC9",
+    "accent":        "#E8635A",
+    "accent_dark":   "#C94D44",
+    "accent_light":  "#FAEAE9"
+  },
+
+  "client": {
+    "name":               "Old Mutual",
+    "confidential_label": "Confidential · Old Mutual Leadership"
+  },
+
+  "contact": {
+    "cta_url":        "https://calendar.app.google/6ZCfq1noCG6h1dFY6",
+    "email":          "seb@nineteen58.co.za",
+    "phone_display":  "+27 83 412 8773",
+    "phone_tel":      "+27834128773",
+    "website_url":    "https://nineteen58.dev",
+    "website_display":"nineteen58.dev",
+    "contact_person": "Sebastian McIntosh"
+  },
+
+  "hero": {
+    "headline_line1":    "The Future of Customer",
+    "headline_line2":    "Conversations at",
+    "headline_accent":   "Old Mutual",
+    "headline_suffix":   " Scale",
+    "subhead":           "13.7 million customers deserve better than a call queue. Nineteen58 delivers AI-powered conversations that reduce cost, increase retention, and outperform Discovery — in 30 days.",
+    "stat1_num":         "200",
+    "stat1_suffix":      "%",
+    "stat1_label":       "Higher collection rate<br>Edgar's Financial Services",
+    "stat2_num":         "3",
+    "stat2_suffix":      "×",
+    "stat2_label":       "Policy volume uplift<br>Bettersure Insurance",
+    "stat3_num":         "70",
+    "stat3_suffix":      "%",
+    "stat3_label":       "Revenue increase<br>uConnect Campaigns"
+  },
+
+  "challenge": {
+    "headline":      "Your Contact Centre Can't Scale the Way Your Customers Expect",
+    "lead":          "Old Mutual serves 13.7 million customers across 12 countries. Every conversation is either an opportunity won — or a customer lost to a competitor already running AI.",
+    "quote":         "&ldquo;Demonstrate resolve on cost. Restore margins and returns over the medium term.&rdquo;",
+    "quote_source":  "— Old Mutual CMD25 Strategic Priority",
+    "card1_icon":    "⚖️",
+    "card1_title":   "Contact Centre at Breaking Point",
+    "card1_body":    "Headcount scales linearly with volume. Your customers expect 24/7 engagement — but your cost structure was never designed for that. Every unanswered query is an at-risk policy.",
+    "card2_icon":    "🏦",
+    "card2_title":   "OM Bank Needs Digital-Native Scale",
+    "card2_body":    "R5.1 billion invested in a fully digital bank. Onboarding, support, and retention still depend on human agents — agents who were never hired at digital speed or digital scale.",
+    "card3_icon":    "🎯",
+    "card3_title":   "Discovery is Already Moving",
+    "card3_body":    "Discovery's AI on WhatsApp is raising your customers' expectations right now. The window to lead — rather than follow — is open. But it won't stay open indefinitely."
+  },
+
+  "opportunity": {
+    "headline":        "Where Old Mutual Wins First",
+    "subhead":         "Three high-impact workstreams. Each with proven precedent in your industry. Each deployable in 30 days.",
+    "card1_icon":      "🏦",
+    "card1_label":     "OM Bank",
+    "card1_title":     "Digital Onboarding &amp; 24/7 Support",
+    "card1_body":      "Your new digital bank needs customer engagement at digital-native scale. AI agents handle account verification, card activation, balance enquiries, and routine support — around the clock, without proportional headcount growth.",
+    "card1_proof_num": "60–70%",
+    "card1_proof_txt": "Reduction in support cost per customer on digital-first accounts",
+    "card2_icon":      "🛡️",
+    "card2_label":     "Life &amp; Savings",
+    "card2_title":     "Policy Retention Campaigns",
+    "card2_body":      "Negative persistency is flagged in your GEV. Before customers lapse, AI agents proactively reach them on WhatsApp — personalised, timely, and at a scale no retention team can match manually.",
+    "card2_proof_num": "3×",
+    "card2_proof_txt": "Policy volume with same consultant headcount — Bettersure Insurance",
+    "card3_icon":      "💳",
+    "card3_label":     "OM Finance",
+    "card3_title":     "Collections at Scale",
+    "card3_body":      "Loan recovery through traditional call centres is expensive, compliance-heavy, and impossible to scale. AI agents on WhatsApp and Voice handle contact, negotiation, and payment processing — with full audit trails.",
+    "card3_proof_num": "200%",
+    "card3_proof_txt": "Higher collection rate vs. traditional call centre — Edgar's Financial"
+  },
+
+  "proof": {
+    "headline":        "Proven in Financial Services.<br>Proven at Your Scale.",
+    "subhead":         "These aren't case studies from adjacent industries. These are outcomes from companies that run the same conversations Old Mutual runs — every day.",
+    "card1_client":    "Edgar's Financial Services",
+    "card1_industry":  "Financial Services · Collections &amp; Recovery",
+    "card1_stat":      "200%",
+    "card1_stat_label":"Higher collection rate than traditional call centres",
+    "card1_detail":    "Edgar's needed to scale collections conversations across WhatsApp and Voice while managing compliance and cost simultaneously. Nineteen58 deployed AI agents that outperformed their entire traditional call centre operation — on rate, volume, and compliance.",
+    "card1_relevance": "→ Direct match: OM Finance lending book",
+    "card2_client":    "Bettersure Insurance",
+    "card2_industry":  "Insurance · Policy Sales &amp; Retention",
+    "card2_stat":      "3×",
+    "card2_stat_label":"Policy volume with same consultant headcount",
+    "card2_detail":    "Bettersure's booking rate moved from 3.2% to 8.4% — and final conversion reached 10%. The same consultants now handle triple the policy volume because AI qualified and engaged every enquiry before human handoff.",
+    "card2_relevance": "→ Direct match: Life &amp; Savings division",
+    "card3_client":    "uConnect Mobile",
+    "card3_industry":  "Telecoms · Customer Engagement Campaigns",
+    "card3_stat":      "70%",
+    "card3_stat_label":"Revenue increase via personalised WhatsApp campaigns",
+    "card3_detail":    "uConnect replaced broadcast campaigns with personalised AI-driven WhatsApp conversations at scale. The result was a 70% revenue uplift — proving that personal, data-driven outreach dramatically outperforms mass messaging. The same playbook applies to retention.",
+    "card3_relevance": "→ Direct match: Retention &amp; upsell campaigns",
+    "footer_quote":    "The same AI agents handling Edgar's collections can handle Old Mutual Finance's lending book — starting in 30 days.",
+    "footer_source":   "— Nineteen58 Deployment Commitment"
+  },
+
+  "audio": {
+    "headline":       "What Our AI Agents<br>Actually Sound Like",
+    "subhead":        "Real conversation samples from deployed agents — in the conversations Old Mutual has every day.",
+    "player1_label":  "Life &amp; Savings · Bettersure",
+    "player1_title":  "Outbound Retention Agent — Wills Consultation",
+    "player1_dur":    "1:13",
+    "player1_src":    "audio/bettersure-retention.mp3",
+    "player1_secs":   "73",
+    "player1_desc":   "An AI agent calling existing insurance customers to offer a free will consultation — a natural cross-sell that increases customer lifetime value and reduces lapse risk. Same playbook applies directly to Old Mutual's Life &amp; Savings retention campaigns.",
+    "player2_label":  "Collections · Core Connect",
+    "player2_title":  "Truworths Client Call — Debt Collection Example",
+    "player2_dur":    "5:49",
+    "player2_src":    "audio/coreconnect-collections.mp3",
+    "player2_secs":   "349",
+    "player2_desc":   "A full debt collection call handled end-to-end by an AI agent — empathetic, compliant, and effective. This is the model behind Edgar's 200% collection rate improvement, directly applicable to OM Finance's lending book.",
+    "player3_label":  "Contact Centre · Uconnect",
+    "player3_title":  "Inbound Service Agent — Customer Query",
+    "player3_dur":    "1:03",
+    "player3_src":    "audio/uconnect-inbound.mp3",
+    "player3_secs":   "63",
+    "player3_desc":   "An AI agent handling an inbound customer service call autonomously — resolving the query without human escalation. This is how Old Mutual frees up 50%+ of contact centre capacity and cuts cost per query by 80%+."
+  },
+
+  "cta": {
+    "headline":    "Ready to Lead in<br>Financial Services AI?",
+    "subhead":     "Not a two-hour sales presentation. Not a generic demo. A focused 30-minute conversation about one specific workstream — and what measurable results look like within your context.",
+    "button_text": "Book a 30 minute chat",
+    "commitment":  "No long-term commitment. No platform fees. Just measurable results in 30 days."
+  }
+}
