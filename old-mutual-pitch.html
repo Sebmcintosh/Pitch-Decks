@@ -1520,19 +1520,19 @@
 
     <div class="audio-grid">
 
-      <!-- Player 1: Collections -->
+      <!-- Player 1: Bettersure Retention -->
       <div class="audio-card r d1">
         <div class="audio-card-top">
           <div>
-            <span class="audio-label">Collections</span>
-            <div class="audio-title">AI Agent — Payment Recovery</div>
+            <span class="audio-label">Life &amp; Savings · Bettersure</span>
+            <div class="audio-title">Outbound Retention Agent — Wills Consultation</div>
           </div>
-          <span class="audio-dur">2:14</span>
+          <span class="audio-dur">1:13</span>
         </div>
-        <audio id="a1" src="audio/collections-sample.mp3" preload="none"></audio>
+        <audio id="a1" src="audio/bettersure-retention.mp3" preload="none"></audio>
         <div class="audio-player">
           <div class="audio-controls">
-            <button class="play-btn" id="btn1" aria-label="Play collections sample" onclick="handlePlay(1)">
+            <button class="play-btn" id="btn1" aria-label="Play Bettersure retention sample" onclick="handlePlay(1)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
             </button>
             <div class="audio-track">
@@ -1545,27 +1545,27 @@
                 <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
               </div>
               <div class="audio-times">
-                <span id="ct1">0:00</span><span>2:14</span>
+                <span id="ct1">0:00</span><span>1:13</span>
               </div>
             </div>
           </div>
         </div>
-        <p class="audio-desc">How an AI agent handles an inbound collections conversation — negotiating payment arrangements, maintaining compliance, and resolving without escalation.</p>
+        <p class="audio-desc">An AI agent calling existing insurance customers to offer a free will consultation — a natural cross-sell that increases customer lifetime value and reduces lapse risk. Same playbook applies directly to Old Mutual's Life &amp; Savings retention campaigns.</p>
       </div>
 
-      <!-- Player 2: Retention -->
+      <!-- Player 2: Core Connect Debt Collection -->
       <div class="audio-card r d2">
         <div class="audio-card-top">
           <div>
-            <span class="audio-label">Policy Retention</span>
-            <div class="audio-title">AI Agent — Lapse Prevention</div>
+            <span class="audio-label">Collections · Core Connect</span>
+            <div class="audio-title">Debt Collection Agent — Samantha</div>
           </div>
-          <span class="audio-dur">1:48</span>
+          <span class="audio-dur">5:49</span>
         </div>
-        <audio id="a2" src="audio/retention-sample.mp3" preload="none"></audio>
+        <audio id="a2" src="audio/coreconnect-collections.mp3" preload="none"></audio>
         <div class="audio-player">
           <div class="audio-controls">
-            <button class="play-btn" id="btn2" aria-label="Play retention sample" onclick="handlePlay(2)">
+            <button class="play-btn" id="btn2" aria-label="Play Core Connect debt collection sample" onclick="handlePlay(2)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
             </button>
             <div class="audio-track">
@@ -1578,27 +1578,27 @@
                 <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
               </div>
               <div class="audio-times">
-                <span id="ct2">0:00</span><span>1:48</span>
+                <span id="ct2">0:00</span><span>5:49</span>
               </div>
             </div>
           </div>
         </div>
-        <p class="audio-desc">An outbound WhatsApp + Voice agent proactively reaching an at-risk policyholder before lapse — warm, empathetic, outcome-driven.</p>
+        <p class="audio-desc">A full debt collection call handled end-to-end by an AI agent — empathetic, compliant, and effective. This is the model behind Edgar's 200% collection rate improvement, directly applicable to OM Finance's lending book.</p>
       </div>
 
-      <!-- Player 3: Onboarding -->
+      <!-- Player 3: Uconnect Inbound -->
       <div class="audio-card r d3">
         <div class="audio-card-top">
           <div>
-            <span class="audio-label">OM Bank Support</span>
-            <div class="audio-title">AI Agent — Account Onboarding</div>
+            <span class="audio-label">Contact Centre · Uconnect</span>
+            <div class="audio-title">Inbound Service Agent — Customer Query</div>
           </div>
-          <span class="audio-dur">1:32</span>
+          <span class="audio-dur">1:03</span>
         </div>
-        <audio id="a3" src="audio/onboarding-sample.mp3" preload="none"></audio>
+        <audio id="a3" src="audio/uconnect-inbound.mp3" preload="none"></audio>
         <div class="audio-player">
           <div class="audio-controls">
-            <button class="play-btn" id="btn3" aria-label="Play onboarding sample" onclick="handlePlay(3)">
+            <button class="play-btn" id="btn3" aria-label="Play Uconnect inbound service sample" onclick="handlePlay(3)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
             </button>
             <div class="audio-track">
@@ -1611,12 +1611,12 @@
                 <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
               </div>
               <div class="audio-times">
-                <span id="ct3">0:00</span><span>1:32</span>
+                <span id="ct3">0:00</span><span>1:03</span>
               </div>
             </div>
           </div>
         </div>
-        <p class="audio-desc">A digital-first account onboarding conversation — guiding a new OM Bank customer through verification and activation, no human agent required.</p>
+        <p class="audio-desc">An AI agent handling an inbound customer service call autonomously — resolving the query without human escalation. This is how Old Mutual frees up 50%+ of contact centre capacity and cuts cost per query by 80%+.</p>
       </div>
 
     </div>
@@ -1727,7 +1727,7 @@ const co = new IntersectionObserver(
 document.querySelectorAll('.counter').forEach(el => co.observe(el));
 
 // ── Audio players ─────────────────────────────────────
-const DURATIONS = { 1: 134, 2: 108, 3: 92 }; // seconds
+const DURATIONS = { 1: 73, 2: 349, 3: 63 }; // seconds (Bettersure 1:13, Core Connect 5:49, Uconnect 1:03)
 const simTimers = {};
 
 function fmtTime(s) {
