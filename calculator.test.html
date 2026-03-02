@@ -1,828 +1,1090 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROI Calculator — Nineteen58</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    /* ── VARIABLES ─────────────────────────────────────────────── */
-    :root {
-      --bg:           #0a0a0a;
-      --bg-card:      #111111;
-      --bg-elevated:  #161616;
-      --border:       #222222;
-      --border-acc:   rgba(0,232,122,0.3);
-      --text:         #ffffff;
-      --muted:        #666666;
-      --dim:          #3a3a3a;
-      --accent:       #00e87a;
-      --acc-dim:      rgba(0,232,122,0.07);
-      --red:          #ff4d4d;
-      --mono:         'IBM Plex Mono', monospace;
-      --display:      'Syne', sans-serif;
-      --r:            4px;
-      --rl:           8px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI Calculator — Nineteen58</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --white: #ffffff;
+    --grey-100: #f5f5f5;
+    --grey-200: #e8e8e8;
+    --grey-400: #999999;
+    --grey-600: #555555;
+    --grey-800: #222222;
+    --border: 1px solid #e8e8e8;
+    --border-dark: 1px solid #222222;
+  }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--display);
-      min-height: 100vh;
-      /* Subtle grid texture */
-      background-image:
-        radial-gradient(ellipse 90% 40% at 50% 0%, rgba(0,232,122,0.05) 0%, transparent 60%),
-        repeating-linear-gradient(0deg,   transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px),
-        repeating-linear-gradient(90deg,  transparent, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px);
-    }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    font-size: 14px;
+  }
 
-    /* ── HEADER ────────────────────────────────────────────────── */
-    header {
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0;
-      background: rgba(10,10,10,0.94);
-      backdrop-filter: blur(14px);
-      z-index: 100;
-    }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    border-bottom: var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
 
-    /* CLIENT LOGO PLACEHOLDER — swap .logo content or insert <img> below */
-    .logo {
-      font-family: var(--display); font-weight: 800; font-size: 1.2rem;
-      color: var(--text); text-decoration: none; letter-spacing: -0.04em;
-    }
-    .logo span { color: var(--accent); }
-    /* END LOGO PLACEHOLDER */
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--black);
+  }
 
-    .currency-selector {
-      display: flex; gap: 2px;
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r); padding: 3px;
-    }
-    .currency-btn {
-      background: none; border: none; color: var(--muted);
-      font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
-      padding: 5px 11px; border-radius: 2px; cursor: pointer; transition: all 0.12s;
-    }
-    .currency-btn.active { background: var(--accent); color: #000; }
-    .currency-btn:hover:not(.active) { color: var(--text); }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
 
-    /* ── LAYOUT ────────────────────────────────────────────────── */
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-    main { padding: 44px 0 80px; }
+  .currency-select {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    background: transparent;
+    border: var(--border-dark);
+    color: var(--black);
+    padding: 8px 14px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    appearance: none;
+    -webkit-appearance: none;
+  }
 
-    .page-title { margin-bottom: 44px; }
-    .page-title h1 {
-      font-weight: 800; font-size: clamp(2rem, 5vw, 3.2rem);
-      line-height: 1; letter-spacing: -0.04em;
-    }
-    .page-title p { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
+  /* HERO */
+  .hero {
+    padding: 80px 48px 60px;
+    border-bottom: var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: end;
+  }
 
-    /* ── SECTION CARDS ─────────────────────────────────────────── */
-    .section { margin-bottom: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
-    .section-header {
-      padding: 18px 26px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 12px;
-    }
-    .section-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--acc-dim); border: 1px solid var(--border-acc);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--mono); font-size: 0.6rem; font-weight: 600; color: var(--accent); flex-shrink: 0;
-    }
-    .section-title {
-      font-weight: 800; font-size: 0.6rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--accent);
-    }
-    .section-body { padding: 26px; }
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 20px;
+  }
 
-    /* ── INPUTS ────────────────────────────────────────────────── */
-    .input-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
-    .input-group { display: flex; flex-direction: column; gap: 7px; }
-    .input-group label { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+  }
 
-    .num-input {
-      background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--r);
-      color: var(--text); font-family: var(--mono); font-size: 0.88rem; font-weight: 500;
-      padding: 10px 13px; width: 100%; outline: none; transition: border-color 0.12s;
-    }
-    .num-input:focus { border-color: var(--accent); }
-    .num-input[readonly] { color: var(--muted); cursor: default; }
-    .num-input.highlight { color: var(--accent); border-color: var(--border-acc); }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--grey-600);
+    line-height: 1.6;
+    margin-top: 20px;
+    max-width: 420px;
+    font-weight: 400;
+  }
 
-    .input-suffix-wrap { position: relative; }
-    .input-suffix-wrap .num-input { padding-right: 38px; }
-    .input-suffix {
-      position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
-      font-family: var(--mono); font-size: 0.72rem; color: var(--dim); pointer-events: none;
-    }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--grey-200);
+    border: var(--border);
+  }
 
-    .slider-combo { display: flex; flex-direction: column; gap: 8px; }
-    .slider-row { display: flex; align-items: center; gap: 12px; }
-    input[type="range"] {
-      -webkit-appearance: none; flex: 1; height: 2px;
-      background: var(--border); border-radius: 1px; outline: none; cursor: pointer;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 13px; height: 13px;
-      background: var(--accent); border-radius: 50%; cursor: pointer;
-      box-shadow: 0 0 10px rgba(0,232,122,0.4);
-    }
-    .slider-val { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: var(--accent); min-width: 44px; text-align: right; }
+  .stat-cell {
+    background: var(--white);
+    padding: 28px 24px;
+  }
 
-    .input-hint { font-family: var(--mono); font-size: 0.66rem; color: var(--muted); margin-top: 3px; }
+  .stat-num {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
 
-    /* ── PRICING TOGGLE ────────────────────────────────────────── */
-    .pricing-toggle { display: flex; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 24px; }
-    .pricing-tab {
-      flex: 1; padding: 14px 18px; background: none; border: none;
-      border-right: 1px solid var(--border); cursor: pointer; text-align: left;
-      transition: background 0.15s;
-    }
-    .pricing-tab:last-child { border-right: none; }
-    .pricing-tab.active { background: var(--acc-dim); }
-    .pricing-tab:hover:not(.active) { background: rgba(255,255,255,0.02); }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--grey-400);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
 
-    .tab-name { display: block; font-family: var(--display); font-weight: 700; font-size: 0.88rem; color: var(--muted); }
-    .pricing-tab.active .tab-name { color: var(--accent); }
-    .tab-badge {
-      display: inline-block; margin-top: 5px;
-      font-family: var(--mono); font-size: 0.62rem; font-weight: 600;
-      padding: 2px 8px; border-radius: 999px;
-    }
-    .badge-preferred { background: var(--accent); color: #000; }
-    .badge-usage { background: var(--bg-elevated); color: var(--muted); border: 1px solid var(--border); }
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    min-height: calc(100vh - 200px);
+  }
 
-    .pricing-panel { display: none; }
-    .pricing-panel.active { display: block; }
+  /* INPUTS PANEL */
+  .inputs-panel {
+    border-right: var(--border);
+    padding: 40px 36px;
+    position: sticky;
+    top: 73px;
+    height: calc(100vh - 73px);
+    overflow-y: auto;
+  }
 
-    /* ── INFO NOTE ─────────────────────────────────────────────── */
-    .info-note {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 12px 14px; margin-top: 14px;
-      background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: var(--r);
-    }
-    .info-note-icon { font-size: 0.7rem; color: var(--muted); margin-top: 1px; flex-shrink: 0; }
-    .info-note-text { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
-    .info-note-text strong { color: var(--text); }
+  .panel-section {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: var(--border);
+  }
 
-    /* ── UPLIFT DISPLAY ────────────────────────────────────────── */
-    .rate-display {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 18px; margin-top: 18px;
-      background: var(--acc-dim); border: 1px solid var(--border-acc); border-radius: var(--r);
-      font-family: var(--mono);
-    }
-    .rate-old  { font-size: 1rem; color: var(--muted); }
-    .rate-arr  { color: var(--dim); }
-    .rate-new  { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
-    .rate-lbl  { margin-left: auto; font-size: 0.67rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .panel-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
 
-    /* ── RESULTS COLUMNS ───────────────────────────────────────── */
-    .results-cols {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1px; background: var(--border);
-      border-radius: var(--rl); overflow: hidden; margin-bottom: 20px;
-    }
-    .results-col { background: var(--bg-card); padding: 26px; }
-    .col-head {
-      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.22em;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
-    }
-    .result-group { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
-    .result-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-    .result-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 9px; }
-    .result-row:last-child { margin-bottom: 0; }
-    .result-lbl { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .result-val { font-family: var(--mono); font-size: 0.88rem; font-weight: 600; color: var(--text); }
-    .result-val.pos { color: var(--accent); }
-    .result-val.neg { color: var(--red); }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 20px;
+  }
 
-    /* ── HERO METRICS ──────────────────────────────────────────── */
-    .hero-metrics {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; background: rgba(0,232,122,0.2);
-      border-radius: var(--rl); overflow: hidden;
-    }
-    .hero-metric {
-      background: var(--bg); padding: 28px 24px; position: relative; overflow: hidden;
-    }
-    .hero-metric::before {
-      content: ''; position: absolute; inset: 0; background: var(--acc-dim);
-    }
-    .hero-metric-lbl {
-      position: relative; font-family: var(--mono); font-size: 0.62rem;
-      letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
-    }
-    .hero-metric-val {
-      position: relative; font-family: var(--mono); font-weight: 600;
-      font-size: clamp(1.4rem, 2.8vw, 2rem); color: var(--accent); line-height: 1;
-      text-shadow: 0 0 30px rgba(0,232,122,0.35);
-    }
-    .hero-metric-sub { position: relative; margin-top: 7px; font-family: var(--mono); font-size: 0.67rem; color: var(--muted); }
+  .field {
+    margin-bottom: 18px;
+  }
 
-    /* ── FOOTER ────────────────────────────────────────────────── */
-    footer { border-top: 1px solid var(--border); padding: 28px 0; }
-    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
-    .footer-left { display: flex; flex-direction: column; gap: 5px; }
-    .footer-copy { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
-    .footer-copy a { color: inherit; text-decoration: none; }
-    .footer-phone { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); }
-    .footer-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    color: var(--grey-800);
+    text-transform: uppercase;
+  }
 
-    .btn {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 10px 18px; border-radius: var(--r); border: none; cursor: pointer;
-      font-family: var(--mono); font-size: 0.76rem; font-weight: 600;
-      text-decoration: none; transition: all 0.14s; letter-spacing: 0.04em;
-    }
-    .btn-primary { background: var(--accent); color: #000; }
-    .btn-primary:hover { background: #00ff8c; box-shadow: 0 0 18px rgba(0,232,122,0.28); }
-    .btn-secondary { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .field input[type="number"],
+  .field input[type="text"] {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 14px;
+    border: var(--border-dark);
+    background: var(--white);
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.15s;
+  }
 
-    /* ── PRINT ─────────────────────────────────────────────────── */
-    @media print {
-      body { background: #fff; color: #000; background-image: none; }
-      header { position: static; background: #fff; box-shadow: none; }
-      .btn-pdf, .currency-selector { display: none; }
-      .section { border: 1px solid #ccc; break-inside: avoid; }
-      .hero-metric { background: #f5f5f5; break-inside: avoid; }
-      .hero-metric-val { color: #000; text-shadow: none; }
-      .hero-metric-lbl, .result-lbl, .col-head { color: #555; }
-      .result-val { color: #000; }
-      .result-val.pos { color: #006633; }
-    }
+  .field input:focus {
+    border-color: var(--black);
+    background: var(--grey-100);
+  }
 
-    /* ── RESPONSIVE ────────────────────────────────────────────── */
-    @media (max-width: 768px) {
-      .results-cols, .hero-metrics { grid-template-columns: 1fr; }
-      .pricing-toggle { flex-direction: column; }
-      .pricing-tab { border-right: none; border-bottom: 1px solid var(--border); }
-      .pricing-tab:last-child { border-bottom: none; }
-      .footer-inner { flex-direction: column; align-items: flex-start; }
-      .input-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 480px) {
-      .container { padding: 0 14px; }
-      .section-body { padding: 18px 14px; }
-      .section-header { padding: 14px; }
-    }
-  </style>
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 2px;
+    background: var(--grey-200);
+    outline: none;
+    margin-top: 10px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--black);
+    cursor: pointer;
+    border-radius: 0;
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-400);
+    margin-top: 4px;
+  }
+
+  .range-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    padding: 8px;
+    background: var(--grey-100);
+    margin-top: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  /* TOGGLE */
+  .model-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: var(--border-dark);
+    margin-bottom: 24px;
+  }
+
+  .toggle-btn {
+    padding: 12px 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    background: var(--white);
+    color: var(--grey-400);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .toggle-btn.active {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .toggle-badge {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    margin-top: 2px;
+    opacity: 0.6;
+  }
+
+  .model-inputs { display: none; }
+  .model-inputs.active { display: block; }
+
+  .read-only-field {
+    background: var(--grey-100);
+    padding: 12px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--grey-600);
+    border: var(--border);
+    margin-bottom: 10px;
+  }
+
+  .read-only-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--grey-400);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  /* RESULTS PANEL */
+  .results-panel {
+    padding: 40px 48px;
+  }
+
+  .results-header {
+    margin-bottom: 40px;
+  }
+
+  .results-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 12px;
+  }
+
+  /* HERO ROI */
+  .roi-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--black);
+    border: var(--border-dark);
+    margin-bottom: 40px;
+  }
+
+  .roi-hero-cell {
+    background: var(--black);
+    color: var(--white);
+    padding: 36px 32px;
+  }
+
+  .roi-hero-cell.secondary {
+    background: var(--grey-800);
+  }
+
+  .roi-big-num {
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .roi-big-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 8px;
+  }
+
+  /* COMPARISON TABLES */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .comparison-card {
+    border: var(--border);
+  }
+
+  .comparison-card-header {
+    padding: 16px 20px;
+    border-bottom: var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .comparison-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .period-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-400);
+    letter-spacing: 0.1em;
+  }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: var(--border);
+  }
+
+  .metric-row:last-child { border-bottom: none; }
+
+  .metric-row.divider {
+    background: var(--grey-100);
+    border-top: var(--border-dark);
+  }
+
+  .metric-row.highlight {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .metric-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--grey-600);
+    letter-spacing: 0.02em;
+  }
+
+  .metric-row.highlight .metric-name { color: rgba(255,255,255,0.6); }
+
+  .metric-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .metric-value.positive { color: #1a7a3c; }
+  .metric-value.negative { color: #c0392b; }
+  .metric-row.highlight .metric-value { color: var(--white); }
+
+  /* BREAKDOWN */
+  .breakdown-section {
+    margin-bottom: 32px;
+  }
+
+  .breakdown-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: var(--border);
+  }
+
+  .breakdown-row {
+    display: grid;
+    grid-template-columns: 1fr 140px 140px;
+    padding: 12px 0;
+    border-bottom: var(--border);
+    align-items: center;
+  }
+
+  .breakdown-row.header {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    padding-bottom: 8px;
+  }
+
+  .breakdown-item {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .breakdown-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    text-align: right;
+  }
+
+  .uplift-display {
+    border: var(--border-dark);
+    padding: 24px;
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--grey-200);
+  }
+
+  .uplift-cell {
+    background: var(--white);
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .uplift-num {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .uplift-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-400);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  .arrow-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--grey-400);
+    background: var(--white);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: var(--border-dark);
+    padding: 32px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .footer-logo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .footer-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .footer-link:hover { color: var(--white); }
+
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-export {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-export:hover {
+    border-color: var(--white);
+    color: var(--white);
+  }
+
+  .btn-cta {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    background: var(--white);
+    border: none;
+    color: var(--black);
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    display: inline-block;
+  }
+
+  .btn-cta:hover { opacity: 0.85; }
+
+  /* CLIENT LOGO PLACEHOLDER */
+  .client-logo-zone {
+    border: 1px dashed var(--grey-200);
+    padding: 12px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--grey-400);
+    text-align: center;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 8px;
+    /* CLIENT LOGO PLACEHOLDER — uncomment and replace with <img> tag when tailoring per client */
+  }
+
+  /* LIVE INDICATOR */
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #1a7a3c;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* PRINT */
+  @media print {
+    nav, .inputs-panel, footer { display: none; }
+    .main { grid-template-columns: 1fr; }
+    .results-panel { padding: 20px; }
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding: 40px 24px; }
+    .main { grid-template-columns: 1fr; }
+    .inputs-panel { position: static; height: auto; border-right: none; border-bottom: var(--border); }
+    .comparison-grid { grid-template-columns: 1fr; }
+    nav { padding: 20px 24px; }
+    .results-panel { padding: 32px 24px; }
+    footer { flex-direction: column; gap: 20px; padding: 24px; }
+    .roi-hero { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     HEADER
-════════════════════════════════════════════════════════════════ -->
-<header>
-  <div class="container">
-    <div class="header-inner">
+<!-- NAV -->
+<nav>
+  <a href="https://nineteen58.dev" target="_blank" class="logo">Nineteen58</a>
+  <div class="nav-right">
+    <!-- CLIENT LOGO PLACEHOLDER — replace span below with <img src="client-logo.png"> when tailoring per client -->
+    <span style="font-family:'DM Mono',monospace;font-size:10px;color:#ccc;letter-spacing:0.1em;text-transform:uppercase;">ROI Calculator</span>
+    <select class="currency-select" id="currency" onchange="update()">
+      <option value="ZAR">ZAR</option>
+      <option value="USD">USD</option>
+      <option value="GBP">GBP</option>
+    </select>
+  </div>
+</nav>
 
-      <!-- ╔══════════════════════════════════════════╗
-           ║  CLIENT LOGO PLACEHOLDER                 ║
-           ║  To add a client logo:                   ║
-           ║  - Replace .logo text with an <img> tag  ║
-           ║  - Or add <img> immediately after .logo  ║
-           ╚══════════════════════════════════════════╝ -->
-      <a href="https://nineteen58.dev" class="logo" target="_blank" rel="noopener">
-        Nineteen<span>58</span>
-      </a>
-
-      <!-- Currency selector — updates all monetary values instantly -->
-      <div class="currency-selector" role="group" aria-label="Select currency">
-        <button class="currency-btn active" data-cur="ZAR" onclick="setCurrency('ZAR')">ZAR</button>
-        <button class="currency-btn"        data-cur="USD" onclick="setCurrency('USD')">USD</button>
-        <button class="currency-btn"        data-cur="GBP" onclick="setCurrency('GBP')">GBP</button>
-      </div>
-
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-label">Outbound Sales Conversion</div>
+    <h1>What could your<br>team achieve?</h1>
+    <p class="hero-sub">Adjust the inputs to model your current operation. See exactly what Nineteen58 delivers against your numbers.</p>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-cell">
+      <div class="stat-num">200%</div>
+      <div class="stat-label">Higher Collection Rate</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">70%</div>
+      <div class="stat-label">Revenue Increase</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">10×</div>
+      <div class="stat-label">ROI Achieved</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">30</div>
+      <div class="stat-label">Days to Production</div>
     </div>
   </div>
-</header>
+</section>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     MAIN
-════════════════════════════════════════════════════════════════ -->
-<main>
-  <div class="container">
+<!-- MAIN -->
+<div class="main">
 
-    <div class="page-title">
-      <h1>ROI Calculator</h1>
-      <p>// enterprise ai agent platform — model your savings in real time</p>
-    </div>
+  <!-- INPUTS -->
+  <aside class="inputs-panel">
 
-    <!-- ─────────────────────────────────────────────────────────
-         SECTION 1 — CURRENT STATE INPUTS
-    ──────────────────────────────────────────────────────────── -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-num">01</div>
-        <span class="section-title">Current State</span>
-      </div>
-      <div class="section-body">
-        <div class="input-grid">
+    <div class="panel-section">
+      <div class="section-label">01 — Current Operation</div>
 
-          <!-- Outbound agents — slider + number -->
-          <div class="input-group">
-            <label>Outbound Agents</label>
-            <div class="slider-combo">
-              <div class="slider-row">
-                <input type="range" id="agentsSlider" min="1" max="1000" value="50"
-                  oninput="syncAgents(this.value, 'slider')">
-                <span class="slider-val" id="agentsSliderVal">50</span>
-              </div>
-              <input type="number" class="num-input" id="agentsInput"
-                min="1" max="1000" value="50" oninput="syncAgents(this.value, 'input')">
-            </div>
-          </div>
-
-          <!-- Agent cost (currency-aware) -->
-          <div class="input-group">
-            <label>Cost per Agent / Month (<span class="cur-label">ZAR</span>)</label>
-            <input type="number" class="num-input" id="agentCostInput" value="25000" oninput="calc()">
-          </div>
-
-          <!-- Monthly call volume -->
-          <div class="input-group">
-            <label>Monthly Call Volume (total)</label>
-            <input type="number" class="num-input" id="callVolumeInput" value="10000" oninput="calc()">
-          </div>
-
-          <!-- Call duration -->
-          <div class="input-group">
-            <label>Avg Call Duration (minutes)</label>
-            <input type="number" class="num-input" id="callDurationInput" value="3" step="0.5" min="0.1" oninput="calc()">
-          </div>
-
-          <!-- Conversion rate -->
-          <div class="input-group">
-            <label>Current Conversion Rate</label>
-            <div class="input-suffix-wrap">
-              <input type="number" class="num-input" id="convRateInput" value="8" min="0" max="100" step="0.1" oninput="calc()">
-              <span class="input-suffix">%</span>
-            </div>
-          </div>
-
-          <!-- Deal value (currency-aware) -->
-          <div class="input-group">
-            <label>Avg Deal Value (<span class="cur-label">ZAR</span>)</label>
-            <input type="number" class="num-input" id="dealValueInput" value="5000" oninput="calc()">
-          </div>
-
+      <div class="field">
+        <label>Outbound Agents</label>
+        <div class="field-row">
+          <input type="range" id="agents" min="1" max="1000" value="50" oninput="update()">
+          <input type="number" id="agents_num" value="50" min="1" max="9999" oninput="syncRange('agents',this.value);update()">
         </div>
+      </div>
+
+      <div class="field">
+        <label>Cost Per Agent / Month</label>
+        <input type="number" id="agent_cost" value="25000" min="0" oninput="update()">
+      </div>
+
+      <div class="field">
+        <label>Monthly Call Volume</label>
+        <input type="number" id="call_volume" value="10000" min="0" oninput="update()">
+      </div>
+
+      <div class="field">
+        <label>Avg Call Duration (mins)</label>
+        <input type="number" id="call_duration" value="3" min="1" oninput="update()">
+      </div>
+
+      <div class="field">
+        <label>Current Conversion Rate %</label>
+        <input type="number" id="conversion_rate" value="8" min="0" max="100" step="0.1" oninput="update()">
+      </div>
+
+      <div class="field">
+        <label>Avg Deal Value</label>
+        <input type="number" id="deal_value" value="5000" min="0" oninput="update()">
       </div>
     </div>
 
-    <!-- ─────────────────────────────────────────────────────────
-         SECTION 2 — PRICING MODEL TOGGLE
-    ──────────────────────────────────────────────────────────── -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-num">02</div>
-        <span class="section-title">Pricing Model</span>
-      </div>
-      <div class="section-body">
-
-        <!-- Toggle tabs -->
-        <div class="pricing-toggle" role="tablist">
-          <button class="pricing-tab active" id="tab-outcome" onclick="setPricingModel('outcome')" role="tab">
-            <span class="tab-name">Outcome-Based</span>
-            <span class="tab-badge badge-preferred">Preferred</span>
-          </button>
-          <button class="pricing-tab" id="tab-enterprise" onclick="setPricingModel('enterprise')" role="tab">
-            <span class="tab-name">Enterprise Plus</span>
-            <span class="tab-badge badge-usage">Usage-Based — $1,999/mo</span>
-          </button>
-        </div>
-
-        <!-- ── OUTCOME-BASED PANEL ── -->
-        <div class="pricing-panel active" id="panel-outcome">
-          <div class="input-grid">
-
-            <div class="input-group">
-              <label>Price per Activation / Conversion (<span class="cur-label">ZAR</span>)</label>
-              <input type="number" class="num-input" id="priceActivationInput" value="300" oninput="calc()">
-            </div>
-
-            <div class="input-group">
-              <label>Price per Retained Customer / Month (<span class="cur-label">ZAR</span>)</label>
-              <input type="number" class="num-input" id="priceRetentionInput" value="50" oninput="calc()">
-            </div>
-
-            <div class="input-group">
-              <label>Expected Retention Period</label>
-              <div class="slider-combo">
-                <div class="slider-row">
-                  <input type="range" id="retentionSlider" min="1" max="60" value="12"
-                    oninput="syncSliderLabel('retention', this.value, v => v + ' mo')">
-                  <span class="slider-val" id="retentionSliderVal">12 mo</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ── ENTERPRISE PLUS PANEL ── -->
-        <div class="pricing-panel" id="panel-enterprise">
-          <div class="input-grid">
-
-            <div class="input-group">
-              <label>Monthly Platform Fee (USD)</label>
-              <input type="number" class="num-input" id="platformFeeInput" value="1999" oninput="calc()">
-              <span class="input-hint">Includes $200 usage credit</span>
-            </div>
-
-            <div class="input-group">
-              <label>Call Initiation ($0.05/call) — auto-calculated (USD)</label>
-              <input type="number" class="num-input" id="callInitDisplay" readonly tabindex="-1">
-            </div>
-
-            <div class="input-group">
-              <label>Per-Minute Pipeline ($0.13/min) — auto-calculated (USD)</label>
-              <input type="number" class="num-input" id="perMinDisplay" readonly tabindex="-1">
-            </div>
-
-            <div class="input-group">
-              <label>Total Est. Monthly Cost (USD)</label>
-              <input type="number" class="num-input highlight" id="entTotalDisplay" readonly tabindex="-1">
-            </div>
-
-          </div>
-
-          <div class="info-note">
-            <span class="info-note-icon">ⓘ</span>
-            <div class="info-note-text">
-              <strong>One-time onboarding fee: $3,000</strong> — billed separately at contract start. Excluded from monthly calculations above.
-            </div>
-          </div>
-        </div>
-
+    <div class="panel-section">
+      <div class="section-label">02 — Nineteen58 Uplift</div>
+      <div class="field">
+        <label>Conversion Rate Improvement</label>
+        <input type="range" id="uplift" min="70" max="100" value="85" oninput="update()">
+        <div class="range-labels"><span>70%</span><span>100%</span></div>
+        <div class="range-value" id="uplift_display">85% uplift</div>
       </div>
     </div>
 
-    <!-- ─────────────────────────────────────────────────────────
-         SECTION 3 — NINETEEN58 UPLIFT
-    ──────────────────────────────────────────────────────────── -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-num">03</div>
-        <span class="section-title">Nineteen58 Performance Uplift</span>
-      </div>
-      <div class="section-body">
-        <div class="input-grid">
-          <div class="input-group" style="grid-column: 1 / -1">
-            <label>Conversion Rate Uplift (70%–100% above baseline)</label>
-            <div class="slider-combo">
-              <div class="slider-row">
-                <input type="range" id="upliftSlider" min="70" max="100" value="85"
-                  oninput="syncSliderLabel('uplift', this.value, v => v + '%')">
-                <span class="slider-val" id="upliftSliderVal">85%</span>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="panel-section">
+      <div class="section-label">03 — Pricing Model</div>
 
-        <!-- Live rate transition display -->
-        <div class="rate-display">
-          <span class="rate-old" id="rateOld">8.0%</span>
-          <span class="rate-arr">→</span>
-          <span class="rate-new" id="rateNew">14.8%</span>
-          <span class="rate-lbl">New Conversion Rate</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─────────────────────────────────────────────────────────
-         SECTION 4 — RESULTS
-    ──────────────────────────────────────────────────────────── -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-num">04</div>
-        <span class="section-title">Results — Live Calculation</span>
-      </div>
-      <div class="section-body">
-
-        <!-- Monthly / Annual columns -->
-        <div class="results-cols">
-
-          <!-- Monthly -->
-          <div class="results-col">
-            <div class="col-head">Monthly</div>
-
-            <div class="result-group">
-              <div class="result-row"><span class="result-lbl">Current Revenue</span>        <span class="result-val" id="m-rev">—</span></div>
-              <div class="result-row"><span class="result-lbl">Current Agent Cost</span>     <span class="result-val" id="m-cost">—</span></div>
-              <div class="result-row"><span class="result-lbl">Current CPA</span>            <span class="result-val" id="m-cpa">—</span></div>
-            </div>
-
-            <div class="result-group">
-              <div class="result-row"><span class="result-lbl">Revenue w/ Nineteen58</span> <span class="result-val" id="m-newrev">—</span></div>
-              <div class="result-row"><span class="result-lbl">Nineteen58 Cost</span>        <span class="result-val" id="m-newcost">—</span></div>
-              <div class="result-row"><span class="result-lbl">New CPA</span>                <span class="result-val" id="m-newcpa">—</span></div>
-            </div>
-
-            <div class="result-group">
-              <div class="result-row"><span class="result-lbl">Revenue Uplift</span>         <span class="result-val" id="m-revuplift">—</span></div>
-              <div class="result-row"><span class="result-lbl">Cost Saving</span>            <span class="result-val" id="m-saving">—</span></div>
-              <div class="result-row"><span class="result-lbl">Net Benefit</span>            <span class="result-val" id="m-net">—</span></div>
-            </div>
-          </div>
-
-          <!-- Annual -->
-          <div class="results-col">
-            <div class="col-head">Annual</div>
-
-            <div class="result-group">
-              <div class="result-row"><span class="result-lbl">Current Revenue</span>        <span class="result-val" id="a-rev">—</span></div>
-              <div class="result-row"><span class="result-lbl">Current Agent Cost</span>     <span class="result-val" id="a-cost">—</span></div>
-              <div class="result-row"><span class="result-lbl">Current CPA</span>            <span class="result-val" id="a-cpa">—</span></div>
-            </div>
-
-            <div class="result-group">
-              <div class="result-row"><span class="result-lbl">Revenue w/ Nineteen58</span> <span class="result-val" id="a-newrev">—</span></div>
-              <div class="result-row"><span class="result-lbl">Nineteen58 Cost</span>        <span class="result-val" id="a-newcost">—</span></div>
-              <div class="result-row"><span class="result-lbl">New CPA</span>                <span class="result-val" id="a-newcpa">—</span></div>
-            </div>
-
-            <div class="result-group">
-              <div class="result-row"><span class="result-lbl">Revenue Uplift</span>         <span class="result-val" id="a-revuplift">—</span></div>
-              <div class="result-row"><span class="result-lbl">Cost Saving</span>            <span class="result-val" id="a-saving">—</span></div>
-              <div class="result-row"><span class="result-lbl">Net Benefit</span>            <span class="result-val" id="a-net">—</span></div>
-            </div>
-          </div>
-
-        </div><!-- /.results-cols -->
-
-        <!-- Hero metrics — the centrepiece numbers -->
-        <div class="hero-metrics">
-          <div class="hero-metric">
-            <div class="hero-metric-lbl">Annual Net Benefit</div>
-            <div class="hero-metric-val" id="hero-net">—</div>
-            <div class="hero-metric-sub">revenue uplift + cost saving</div>
-          </div>
-          <div class="hero-metric">
-            <div class="hero-metric-lbl">Return on Investment</div>
-            <div class="hero-metric-val" id="hero-roi">—</div>
-            <div class="hero-metric-sub">annual net / platform cost</div>
-          </div>
-          <div class="hero-metric">
-            <div class="hero-metric-lbl">Payback Period</div>
-            <div class="hero-metric-val" id="hero-payback">—</div>
-            <div class="hero-metric-sub">months to break even</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div><!-- /.container -->
-</main>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     FOOTER
-════════════════════════════════════════════════════════════════ -->
-<footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-left">
-        <span class="footer-copy">
-          <a href="https://nineteen58.dev" target="_blank" rel="noopener">Nineteen58</a> &copy; 2026
-        </span>
-        <span class="footer-phone">+27 83 412 8773</span>
-      </div>
-      <div class="footer-actions">
-        <a href="https://calendar.app.google/TWk9DBTJjJcL8TLr5"
-           class="btn btn-primary" target="_blank" rel="noopener">
-          Book a Call
-        </a>
-        <button class="btn btn-secondary btn-pdf" onclick="window.print()">
-          Export as PDF
+      <div class="model-toggle">
+        <button class="toggle-btn active" id="btn_outcome" onclick="setModel('outcome')">
+          Outcome-Based
+          <span class="toggle-badge">Preferred</span>
+        </button>
+        <button class="toggle-btn" id="btn_enterprise" onclick="setModel('enterprise')">
+          Enterprise Plus
+          <span class="toggle-badge">$1,999/mo</span>
         </button>
       </div>
+
+      <!-- OUTCOME BASED -->
+      <div class="model-inputs active" id="inputs_outcome">
+        <div class="field">
+          <label>Price Per Activation</label>
+          <input type="number" id="price_activation" value="300" min="0" oninput="update()">
+        </div>
+        <div class="field">
+          <label>Price Per Retained Customer / Month</label>
+          <input type="number" id="price_retention" value="50" min="0" oninput="update()">
+        </div>
+        <div class="field">
+          <label>Retention Period (Months)</label>
+          <input type="range" id="retention_months" min="1" max="36" value="12" oninput="update()">
+          <div class="range-labels"><span>1mo</span><span>36mo</span></div>
+          <div class="range-value" id="retention_display">12 months</div>
+        </div>
+      </div>
+
+      <!-- ENTERPRISE PLUS -->
+      <div class="model-inputs" id="inputs_enterprise">
+        <div class="field">
+          <label>Monthly Platform Fee</label>
+          <input type="number" id="platform_fee" value="1999" min="0" oninput="update()">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#999;margin-top:4px;">Includes $200 usage credit</div>
+        </div>
+        <div class="field">
+          <span class="read-only-label">Call Initiation Cost (auto)</span>
+          <div class="read-only-field" id="call_init_display">—</div>
+          <span class="read-only-label">Pipeline Cost @ $0.13/min (auto)</span>
+          <div class="read-only-field" id="pipeline_cost_display">—</div>
+          <span class="read-only-label">Total Est. Monthly Cost</span>
+          <div class="read-only-field" id="enterprise_total_display" style="font-size:18px;font-weight:600;">—</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#999;padding:8px;background:#f5f5f5;line-height:1.6;">
+          One-time onboarding: $3,000<br>
+          10 concurrent lines incl. (+$20/line)
+        </div>
+      </div>
     </div>
+
+  </aside>
+
+  <!-- RESULTS -->
+  <main class="results-panel">
+
+    <div class="results-header">
+      <div class="results-label"><span class="live-dot"></span>Live Results — updates as you type</div>
+    </div>
+
+    <!-- UPLIFT STRIP -->
+    <div class="uplift-display">
+      <div class="uplift-cell">
+        <div class="uplift-num" id="res_current_rate">8.0%</div>
+        <div class="uplift-lbl">Current Rate</div>
+      </div>
+      <div class="arrow-cell">→</div>
+      <div class="uplift-cell">
+        <div class="uplift-num" id="res_new_rate">14.8%</div>
+        <div class="uplift-lbl">With Nineteen58</div>
+      </div>
+    </div>
+
+    <!-- ROI HERO -->
+    <div class="roi-hero">
+      <div class="roi-hero-cell">
+        <div class="roi-big-num" id="res_roi_pct">—</div>
+        <div class="roi-big-label">Return on Investment</div>
+      </div>
+      <div class="roi-hero-cell secondary">
+        <div class="roi-big-num" id="res_payback">—</div>
+        <div class="roi-big-label">Payback Period</div>
+      </div>
+    </div>
+
+    <!-- MONTHLY / ANNUAL COMPARISON -->
+    <div class="comparison-grid">
+
+      <div class="comparison-card">
+        <div class="comparison-card-header">
+          <span class="comparison-card-title">Monthly View</span>
+          <span class="period-badge">Per Month</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Current Revenue</span>
+          <span class="metric-value" id="m_current_rev">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Current Agent Cost</span>
+          <span class="metric-value negative" id="m_agent_cost">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Cost Per Acquisition</span>
+          <span class="metric-value" id="m_cpa_current">—</span>
+        </div>
+        <div class="metric-row divider">
+          <span class="metric-name">Revenue with Nineteen58</span>
+          <span class="metric-value positive" id="m_new_rev">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Nineteen58 Cost</span>
+          <span class="metric-value negative" id="m_n58_cost">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">New Cost Per Acquisition</span>
+          <span class="metric-value" id="m_cpa_new">—</span>
+        </div>
+        <div class="metric-row highlight">
+          <span class="metric-name">Net Benefit</span>
+          <span class="metric-value" id="m_net">—</span>
+        </div>
+        <div class="metric-row highlight">
+          <span class="metric-name">Revenue Uplift</span>
+          <span class="metric-value" id="m_uplift">—</span>
+        </div>
+      </div>
+
+      <div class="comparison-card">
+        <div class="comparison-card-header">
+          <span class="comparison-card-title">Annual View</span>
+          <span class="period-badge">Per Year</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Current Revenue</span>
+          <span class="metric-value" id="a_current_rev">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Current Agent Cost</span>
+          <span class="metric-value negative" id="a_agent_cost">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Cost Per Acquisition</span>
+          <span class="metric-value" id="a_cpa_current">—</span>
+        </div>
+        <div class="metric-row divider">
+          <span class="metric-name">Revenue with Nineteen58</span>
+          <span class="metric-value positive" id="a_new_rev">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">Nineteen58 Cost</span>
+          <span class="metric-value negative" id="a_n58_cost">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">New Cost Per Acquisition</span>
+          <span class="metric-value" id="a_cpa_new">—</span>
+        </div>
+        <div class="metric-row highlight">
+          <span class="metric-name">Net Benefit</span>
+          <span class="metric-value" id="a_net">—</span>
+        </div>
+        <div class="metric-row highlight">
+          <span class="metric-name">Revenue Uplift</span>
+          <span class="metric-value" id="a_uplift">—</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BREAKDOWN -->
+    <div class="breakdown-section">
+      <div class="breakdown-title">Cost Saving — Headcount vs Nineteen58</div>
+      <div class="breakdown-row header">
+        <span>Item</span>
+        <span style="text-align:right">Monthly</span>
+        <span style="text-align:right">Annual</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-item">Current Agent Payroll</span>
+        <span class="breakdown-val negative" id="b_payroll_m">—</span>
+        <span class="breakdown-val negative" id="b_payroll_a">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-item">Nineteen58 Cost</span>
+        <span class="breakdown-val negative" id="b_n58_m">—</span>
+        <span class="breakdown-val negative" id="b_n58_a">—</span>
+      </div>
+      <div class="breakdown-row" style="font-weight:700;">
+        <span class="breakdown-item">Cost Saving</span>
+        <span class="breakdown-val positive" id="b_saving_m">—</span>
+        <span class="breakdown-val positive" id="b_saving_a">—</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <a href="https://nineteen58.dev" target="_blank" class="footer-logo">Nineteen58</a>
+    <a href="https://nineteen58.dev" target="_blank" class="footer-link">nineteen58.dev</a>
+    <a href="tel:+27834128773" class="footer-link">+27 83 412 8773</a>
+    <span class="footer-link" style="opacity:0.3;">© 2026</span>
+  </div>
+  <div class="footer-right">
+    <button class="btn-export" onclick="window.print()">Export PDF</button>
+    <a href="https://calendar.app.google/TWk9DBTJjJcL8TLr5" target="_blank" class="btn-cta">Book a Call</a>
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     JAVASCRIPT — ALL CALCULATIONS
-════════════════════════════════════════════════════════════════ -->
 <script>
-  // ── CURRENCY CONFIG ─────────────────────────────────────────────
-  // Exchange rates relative to USD. Update as needed.
-  const CURRENCIES = {
-    ZAR: { symbol: 'R',  toUSD: 1 / 18.50 },
-    USD: { symbol: '$',  toUSD: 1 },
-    GBP: { symbol: '£',  toUSD: 1 / 0.79  },
-  };
+  const SYMBOLS = { ZAR: 'R', USD: '$', GBP: '£' };
+  const FX = { ZAR: 1, USD: 0.054, GBP: 0.043 }; // approximate from ZAR base
 
-  // Monetary inputs: id → default value in ZAR
-  // When currency changes, displayed values are converted in place.
-  const MONETARY_INPUTS = [
-    { id: 'agentCostInput',       zarDefault: 25000 },
-    { id: 'dealValueInput',       zarDefault: 5000  },
-    { id: 'priceActivationInput', zarDefault: 300   },
-    { id: 'priceRetentionInput',  zarDefault: 50    },
-  ];
+  let currentModel = 'outcome';
 
-  let currency = 'ZAR';
-  let model    = 'outcome'; // 'outcome' | 'enterprise'
-
-  // ── CURRENCY SWITCHING ──────────────────────────────────────────
-  function setCurrency(newCur) {
-    if (newCur === currency) return;
-
-    // Convert all monetary inputs from old currency to new
-    MONETARY_INPUTS.forEach(({ id }) => {
-      const el  = document.getElementById(id);
-      const val = parseFloat(el.value) || 0;
-      // Convert via USD as bridge currency
-      const inUSD  = val * CURRENCIES[currency].toUSD;
-      const newVal = inUSD / CURRENCIES[newCur].toUSD;
-      el.value = +newVal.toFixed(2);
-    });
-
-    currency = newCur;
-
-    // Update all currency labels in the page
-    document.querySelectorAll('.cur-label').forEach(el => el.textContent = newCur);
-
-    // Update toggle button state
-    document.querySelectorAll('.currency-btn').forEach(btn =>
-      btn.classList.toggle('active', btn.dataset.cur === newCur)
-    );
-
-    calc();
+  function setModel(m) {
+    currentModel = m;
+    document.getElementById('btn_outcome').classList.toggle('active', m === 'outcome');
+    document.getElementById('btn_enterprise').classList.toggle('active', m === 'enterprise');
+    document.getElementById('inputs_outcome').classList.toggle('active', m === 'outcome');
+    document.getElementById('inputs_enterprise').classList.toggle('active', m === 'enterprise');
+    update();
   }
 
-  // ── SLIDER HELPERS ──────────────────────────────────────────────
-  function syncAgents(value, source) {
-    value = Math.max(1, Math.min(1000, parseInt(value) || 1));
-    document.getElementById('agentsSlider').value    = value;
-    document.getElementById('agentsInput').value     = value;
-    document.getElementById('agentsSliderVal').textContent = value;
-    calc();
+  function syncRange(id, val) {
+    document.getElementById(id).value = val;
   }
 
-  function syncSliderLabel(name, value, labelFn) {
-    document.getElementById(name + 'SliderVal').textContent = labelFn(value);
-    calc();
+  function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  function cur() { return document.getElementById('currency').value; }
+
+  function fmt(num) {
+    const currency = cur();
+    const s = SYMBOLS[currency];
+    const converted = currency === 'ZAR' ? num : num * FX[currency];
+    if (Math.abs(converted) >= 1000000) return s + (converted / 1000000).toFixed(2) + 'M';
+    if (Math.abs(converted) >= 1000) return s + Math.round(converted).toLocaleString();
+    return s + converted.toFixed(0);
   }
 
-  // ── PRICING MODEL TOGGLE ────────────────────────────────────────
-  function setPricingModel(m) {
-    model = m;
-    ['outcome', 'enterprise'].forEach(p => {
-      document.getElementById('tab-' + p).classList.toggle('active',    p === m);
-      document.getElementById('panel-' + p).classList.toggle('active',  p === m);
-    });
-    calc();
-  }
+  function update() {
+    // Sync sliders
+    document.getElementById('agents_num').value = v('agents');
+    document.getElementById('uplift_display').textContent = v('uplift') + '% uplift';
+    document.getElementById('retention_display').textContent = v('retention_months') + ' months';
 
-  // ── FORMATTING ──────────────────────────────────────────────────
-  // Format a number as money in the current display currency
-  function fmt(n) {
-    const sym = CURRENCIES[currency].symbol;
-    const abs = Math.abs(n);
-    let str;
-    if (abs >= 1_000_000) {
-      str = (abs / 1_000_000).toFixed(2) + 'M';
+    const agents    = v('agents');
+    const agentCost = v('agent_cost');
+    const callVol   = v('call_volume');
+    const callDur   = v('call_duration');
+    const convRate  = v('conversion_rate') / 100;
+    const dealVal   = v('deal_value');
+    const upliftPct = v('uplift') / 100;
+
+    // Current state
+    const currentConversions = callVol * convRate;
+    const currentRevenue     = currentConversions * dealVal;
+    const currentAgentCost   = agents * agentCost;
+    const currentCPA         = currentConversions > 0 ? currentAgentCost / currentConversions : 0;
+
+    // With Nineteen58
+    const newConvRate    = convRate * (1 + upliftPct);
+    const newConversions = callVol * newConvRate;
+    const newRevenue     = newConversions * dealVal;
+
+    // N58 cost
+    let n58MonthlyCost = 0;
+    if (currentModel === 'outcome') {
+      const priceActivation = v('price_activation');
+      const priceRetention  = v('price_retention');
+      const retMonths       = v('retention_months');
+      n58MonthlyCost = (newConversions * priceActivation) + (newConversions * priceRetention * retMonths / 12);
     } else {
-      str = Math.round(abs).toLocaleString('en-ZA');
-    }
-    return (n < 0 ? '-' : '') + sym + str;
-  }
+      const platformFee    = v('platform_fee');
+      // Convert platform fee from USD to ZAR for calcs
+      const platformFeeZAR = platformFee / FX['USD'];
+      const callInitCost   = callVol * 0.05;             // $0.05/call in USD
+      const callInitZAR    = callInitCost / FX['USD'];
+      const pipelineCost   = callVol * callDur * 0.13;   // $0.13/min
+      const pipelineZAR    = pipelineCost / FX['USD'];
+      n58MonthlyCost       = platformFeeZAR + callInitZAR + pipelineZAR;
 
-  function fmtPct(n) { return n.toFixed(1) + '%'; }
-
-  function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
-
-  // Set a plain result cell
-  function set(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-  }
-
-  // Set a result cell with positive/negative colouring
-  function setC(id, text, value) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = text;
-    el.classList.toggle('pos', value >= 0);
-    el.classList.toggle('neg', value < 0);
-  }
-
-  // Convert USD amount to current display currency
-  function fromUSD(usd) { return usd / CURRENCIES[currency].toUSD; }
-
-  // ── CORE CALCULATION ────────────────────────────────────────────
-  function calc() {
-    // Section 1 inputs
-    const agents       = gv('agentsInput');
-    const agentCost    = gv('agentCostInput');    // current currency
-    const callVol      = gv('callVolumeInput');
-    const callDur      = gv('callDurationInput'); // minutes
-    const convRate     = gv('convRateInput');     // percent (e.g. 8)
-    const dealValue    = gv('dealValueInput');    // current currency
-
-    // Section 3 uplift
-    const upliftPct    = gv('upliftSlider');      // e.g. 85 → 85% uplift on current rate
-
-    // ── Current state ─────────────────────────────────────────────
-    const curConversions  = callVol * (convRate / 100);
-    const curRevenue      = curConversions * dealValue;
-    const curAgentCost    = agents * agentCost;
-    const curCPA          = curConversions > 0 ? curAgentCost / curConversions : null;
-
-    // ── Nineteen58 conversion rate ────────────────────────────────
-    // upliftPct% uplift ON TOP of current rate
-    const newConvRate    = convRate * (1 + upliftPct / 100);
-    const newConversions = callVol * (newConvRate / 100);
-    const newRevenue     = newConversions * dealValue;
-
-    // Update Section 3 rate display
-    document.getElementById('rateOld').textContent = fmtPct(convRate);
-    document.getElementById('rateNew').textContent = fmtPct(newConvRate);
-
-    // ── Nineteen58 monthly cost ───────────────────────────────────
-    let monthlyN58Cost = 0; // in current display currency
-
-    if (model === 'outcome') {
-      const priceAct  = gv('priceActivationInput'); // current currency per conversion
-      const priceRet  = gv('priceRetentionInput');  // current currency per retained customer/month
-      // Monthly cost = activations × price + ongoing retained base × retention fee
-      // Simplified: treat each month's new conversions as adding to retained base;
-      // average retained per month modelled as newConversions × retentionMonths / 12
-      const retMonths     = gv('retentionSlider');
-      const activationCost = newConversions * priceAct;
-      const retainedBase   = newConversions * Math.min(retMonths, 12) / 12;
-      const retentionCost  = retainedBase * priceRet;
-      monthlyN58Cost       = activationCost + retentionCost;
-
-    } else {
-      // Enterprise Plus — all base prices in USD
-      const platformFeeUSD  = gv('platformFeeInput');
-      const callInitUSD     = callVol * 0.05;
-      const perMinUSD       = callVol * callDur * 0.13;
-      const totalUSD        = platformFeeUSD + callInitUSD + perMinUSD;
-
-      // Update read-only Enterprise Plus fields (shown in USD)
-      document.getElementById('callInitDisplay').value  = callInitUSD.toFixed(2);
-      document.getElementById('perMinDisplay').value    = perMinUSD.toFixed(2);
-      document.getElementById('entTotalDisplay').value  = totalUSD.toFixed(2);
-
-      // Convert to current display currency for results
-      monthlyN58Cost = fromUSD(totalUSD);
+      // Update read-only fields
+      document.getElementById('call_init_display').textContent        = fmt(callInitZAR) + ' (' + callVol.toLocaleString() + ' calls × $0.05)';
+      document.getElementById('pipeline_cost_display').textContent    = fmt(pipelineZAR) + ' (' + (callVol * callDur).toLocaleString() + ' mins × $0.13)';
+      document.getElementById('enterprise_total_display').textContent = fmt(n58MonthlyCost) + ' /month';
     }
 
-    // ── Derived metrics ───────────────────────────────────────────
-    const newCPA       = newConversions > 0 ? monthlyN58Cost / newConversions : null;
-    const revUplift    = newRevenue - curRevenue;
-    const costSaving   = curAgentCost - monthlyN58Cost;
-    const netBenefit   = revUplift + costSaving;
-    // ROI = annual net benefit / annual N58 cost × 100
-    const roi          = monthlyN58Cost > 0 ? (netBenefit * 12) / (monthlyN58Cost * 12) * 100 : 0;
-    // Payback = months of N58 cost to cover one month of net benefit
-    const payback      = netBenefit > 0 ? monthlyN58Cost / netBenefit : null;
+    const newCPA         = newConversions > 0 ? n58MonthlyCost / newConversions : 0;
+    const revenueUplift  = newRevenue - currentRevenue;
+    const costSaving     = currentAgentCost - n58MonthlyCost;
+    const netBenefit     = revenueUplift + costSaving;
+    const roi            = n58MonthlyCost > 0 ? (netBenefit / n58MonthlyCost) * 100 : 0;
+    const payback        = netBenefit > 0 ? (n58MonthlyCost / (netBenefit / 12)) : 0;
 
-    // ── Update results UI ─────────────────────────────────────────
-    // Monthly column
-    set('m-rev',      fmt(curRevenue));
-    set('m-cost',     fmt(curAgentCost));
-    set('m-cpa',      curCPA !== null ? fmt(curCPA) : 'N/A');
-    set('m-newrev',   fmt(newRevenue));
-    set('m-newcost',  fmt(monthlyN58Cost));
-    set('m-newcpa',   newCPA !== null ? fmt(newCPA) : 'N/A');
-    setC('m-revuplift', fmt(revUplift),  revUplift);
-    setC('m-saving',    fmt(costSaving), costSaving);
-    setC('m-net',       fmt(netBenefit), netBenefit);
+    // Conversion rates
+    document.getElementById('res_current_rate').textContent = (convRate * 100).toFixed(1) + '%';
+    document.getElementById('res_new_rate').textContent     = (newConvRate * 100).toFixed(1) + '%';
 
-    // Annual column (× 12)
-    set('a-rev',      fmt(curRevenue   * 12));
-    set('a-cost',     fmt(curAgentCost * 12));
-    set('a-cpa',      curCPA !== null ? fmt(curCPA) : 'N/A');
-    set('a-newrev',   fmt(newRevenue     * 12));
-    set('a-newcost',  fmt(monthlyN58Cost * 12));
-    set('a-newcpa',   newCPA !== null ? fmt(newCPA) : 'N/A');
-    setC('a-revuplift', fmt(revUplift  * 12), revUplift);
-    setC('a-saving',    fmt(costSaving * 12), costSaving);
-    setC('a-net',       fmt(netBenefit * 12), netBenefit);
+    // ROI hero
+    document.getElementById('res_roi_pct').textContent = roi > 0 ? Math.round(roi) + '%' : '—';
+    document.getElementById('res_payback').textContent  = payback > 0 ? payback.toFixed(1) + ' mo' : '—';
 
-    // Hero metrics
-    set('hero-net',     fmt(netBenefit * 12));
-    set('hero-roi',     roi.toFixed(0) + '%');
-    set('hero-payback', payback !== null ? payback.toFixed(1) + ' mo' : '< 1 mo');
+    // Monthly
+    document.getElementById('m_current_rev').textContent = fmt(currentRevenue);
+    document.getElementById('m_agent_cost').textContent  = '−' + fmt(currentAgentCost);
+    document.getElementById('m_cpa_current').textContent = fmt(currentCPA);
+    document.getElementById('m_new_rev').textContent     = fmt(newRevenue);
+    document.getElementById('m_n58_cost').textContent    = '−' + fmt(n58MonthlyCost);
+    document.getElementById('m_cpa_new').textContent     = fmt(newCPA);
+    document.getElementById('m_net').textContent         = fmt(netBenefit);
+    document.getElementById('m_uplift').textContent      = fmt(revenueUplift);
+
+    // Annual
+    document.getElementById('a_current_rev').textContent = fmt(currentRevenue * 12);
+    document.getElementById('a_agent_cost').textContent  = '−' + fmt(currentAgentCost * 12);
+    document.getElementById('a_cpa_current').textContent = fmt(currentCPA);
+    document.getElementById('a_new_rev').textContent     = fmt(newRevenue * 12);
+    document.getElementById('a_n58_cost').textContent    = '−' + fmt(n58MonthlyCost * 12);
+    document.getElementById('a_cpa_new').textContent     = fmt(newCPA);
+    document.getElementById('a_net').textContent         = fmt(netBenefit * 12);
+    document.getElementById('a_uplift').textContent      = fmt(revenueUplift * 12);
+
+    // Breakdown
+    document.getElementById('b_payroll_m').textContent = '−' + fmt(currentAgentCost);
+    document.getElementById('b_payroll_a').textContent = '−' + fmt(currentAgentCost * 12);
+    document.getElementById('b_n58_m').textContent     = '−' + fmt(n58MonthlyCost);
+    document.getElementById('b_n58_a').textContent     = '−' + fmt(n58MonthlyCost * 12);
+    document.getElementById('b_saving_m').textContent  = fmt(costSaving);
+    document.getElementById('b_saving_a').textContent  = fmt(costSaving * 12);
   }
 
-  // ── INIT ─────────────────────────────────────────────────────────
-  calc();
+  // Init
+  update();
 </script>
-
 </body>
 </html>
